@@ -2,12 +2,14 @@
 
 import { MessageSquare } from "lucide-react"
 
-export function ChatEmptyState() {
+interface ChatEmptyStateProps {
+  onSuggestionClick?: (suggestion: string) => void
+}
+
+export function ChatEmptyState({ onSuggestionClick }: ChatEmptyStateProps) {
   return (
-    <div className="flex h-full flex-col items-center justify-center px-4 pb-8">
-      <div className="mb-8 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500/5">
-        <MessageSquare className="h-10 w-10 text-emerald-500" />
-      </div>
+    <div className="flex flex-col items-center gap-6 px-4">
+
       <h1 className="text-3xl font-semibold text-foreground">How can I help you today?</h1>
     </div>
   )

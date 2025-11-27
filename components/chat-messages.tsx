@@ -2,12 +2,7 @@
 
 import { useRef, useEffect } from "react"
 import { ChatMessage } from "./chat-message"
-
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-}
+import { Message } from '@/lib/types'
 
 interface ChatMessagesProps {
   messages: Message[]

@@ -1,3 +1,6 @@
+import { ChatRequest } from '@/lib/types'
+import { DEFAULT_MODEL } from '@/lib/models'
+
 export const maxDuration = 60
 
 export async function POST(req: Request) {
@@ -9,7 +12,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json()
-    const { messages } = body
+    const { messages, model = DEFAULT_MODEL } = body as ChatRequest
 
     const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -22,7 +25,7 @@ export async function POST(req: Request) {
           role: msg.role,
           content: msg.content,
         })),
-        model: "llama-3.3-70b-versatile",
+        model: model,
         temperature: 0.7,
         max_tokens: 4096,
       }),
@@ -37,7 +40,10 @@ export async function POST(req: Request) {
     const data = await groqResponse.json()
     const content = data.choices?.[0]?.message?.content || ""
 
-    return Response.json({ content })
+    return Response.json({
+      content,
+      model: model,
+    })
   } catch (error) {
     console.log("[v0] Server error:", error)
     return Response.json({ error: `Server error: ${(error as Error).message}` }, { status: 500 })

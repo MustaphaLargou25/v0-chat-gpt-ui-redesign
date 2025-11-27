@@ -1,16 +1,11 @@
 "use client"
 
-import { Copy, ThumbsUp, ThumbsDown, User, Check } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { Copy, ThumbsUp, ThumbsDown, User, Check, RefreshCw } from "lucide-react"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { useState, useEffect, useRef } from "react"
-
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-}
+import { Message } from '@/lib/types'
 
 interface ChatMessageProps {
   message: Message
@@ -71,8 +66,29 @@ export function ChatMessage({ message, isLatest = false }: ChatMessageProps) {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  const [liked, setLiked] = useState(false)
+  const [disliked, setDisliked] = useState(false)
+
+  const handleLike = () => {
+    if (liked) {
+      setLiked(false)
+    } else {
+      setLiked(true)
+      setDisliked(false) // Can't like and dislike at the same time
+    }
+  }
+
+  const handleDislike = () => {
+    if (disliked) {
+      setDisliked(false)
+    } else {
+      setDisliked(true)
+      setLiked(false) // Can't like and dislike at the same time
+    }
+  }
+
   return (
-    <div className={cn("group relative flex gap-4 px-4 py-6", isUser ? "bg-background" : "bg-muted/30")}>
+    <div className={cn("group relative flex gap-4 px-4 py-6", !isUser && "bg-muted/30")}>
       <div className="flex w-full max-w-3xl mx-auto gap-4">
         <Avatar className="h-8 w-8 shrink-0">
           {isUser ? (
@@ -83,6 +99,7 @@ export function ChatMessage({ message, isLatest = false }: ChatMessageProps) {
             </>
           ) : (
             <>
+              <AvatarImage src="https://i.ibb.co/BH6qTZLv/icon-512.png" alt="Assistant" />
               <AvatarFallback className="bg-emerald-600 text-white">AI</AvatarFallback>
             </>
           )}
@@ -90,21 +107,35 @@ export function ChatMessage({ message, isLatest = false }: ChatMessageProps) {
 
         <div className="flex-1 space-y-3 min-w-0">
           <div className="font-medium text-sm text-muted-foreground">{isUser ? "You" : "Assistant"}</div>
-          <div className="prose prose-sm dark:prose-invert max-w-none leading-relaxed whitespace-pre-wrap break-words">
+          <div className={cn(
+            "prose prose-sm dark:prose-invert max-w-none leading-relaxed whitespace-pre-wrap break-words",
+            isUser && "bg-[#303030] rounded-2xl px-4 py-3"
+          )}>
             {displayedContent || <span className="text-muted-foreground italic">Thinking...</span>}
             {isTyping && <span className="inline-block w-0.5 h-4 bg-emerald-500 ml-0.5 animate-pulse" />}
           </div>
 
           {!isUser && message.content && !isTyping && (
-            <div className="flex items-center gap-1 opacity-0 transition-opacity group-hover:opacity-100">
+            <div className="flex items-center gap-1">
               <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleCopy}>
                 {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
               </Button>
-              <Button size="icon" variant="ghost" className="h-7 w-7">
-                <ThumbsUp className="h-3.5 w-3.5" />
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleLike}>
+                <ThumbsUp className={`h-3.5 w-3.5 ${liked ? 'text-green-500 fill-green-500' : ''}`} />
               </Button>
-              <Button size="icon" variant="ghost" className="h-7 w-7">
-                <ThumbsDown className="h-3.5 w-3.5" />
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleDislike}>
+                <ThumbsDown className={`h-3.5 w-3.5 ${disliked ? 'text-red-500 fill-red-500' : ''}`} />
+              </Button>
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => console.log('Regenerate response')}>
+                <RefreshCw className="h-3.5 w-3.5" />
+              </Button>
+            </div>
+          )}
+
+          {isUser && message.content && (
+            <div className="flex items-center gap-1">
+              <Button size="icon" variant="ghost" className="h-7 w-7" onClick={handleCopy}>
+                {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5" />}
               </Button>
             </div>
           )}

@@ -1,25 +1,35 @@
 "use client"
 
 import type React from "react"
-import { useState, useCallback, useRef } from "react"
+import { useState, useCallback, useRef, useEffect } from "react"
 import { ChatSidebar } from "@/components/chat-sidebar"
 import { ChatHeader } from "@/components/chat-header"
 import { ChatEmptyState } from "@/components/chat-empty-state"
 import { ChatMessages } from "@/components/chat-messages"
 import { ChatInput } from "@/components/chat-input"
-
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-}
+import { Message } from '@/lib/types'
+import { SUPPORTED_MODELS, DEFAULT_MODEL } from '@/lib/models'
 
 export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL)
   const abortControllerRef = useRef<AbortController | null>(null)
+
+  // Load model from localStorage on mount
+  useEffect(() => {
+    const savedModel = localStorage.getItem('selectedModel')
+    if (savedModel) {
+      setSelectedModel(savedModel)
+    }
+  }, [])
+
+  // Save model to localStorage when changed
+  useEffect(() => {
+    localStorage.setItem('selectedModel', selectedModel)
+  }, [selectedModel])
 
   const sendMessage = useCallback(
     async (messageContent: string, currentMessages: Message[]) => {
@@ -49,6 +59,7 @@ export default function Home() {
               role: m.role,
               content: m.content,
             })),
+            model: selectedModel,
           }),
           signal: abortControllerRef.current.signal,
         })
@@ -91,7 +102,7 @@ export default function Home() {
         abortControllerRef.current = null
       }
     },
-    [isLoading],
+    [isLoading, selectedModel],
   )
 
   const handleSubmit = useCallback(
@@ -113,26 +124,59 @@ export default function Home() {
     [messages, sendMessage],
   )
 
+  const handleNewChat = useCallback(() => {
+    setMessages([])
+    setInput("")
+  }, [])
+
   return (
     <div className="flex h-screen overflow-hidden bg-background">
-      <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} />
+      <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
 
       <main className="flex flex-1 flex-col min-w-0">
-        <ChatHeader onToggleSidebar={() => setIsSidebarOpen(true)} isSidebarOpen={isSidebarOpen} />
+        <ChatHeader
+          onToggleSidebar={() => setIsSidebarOpen(true)}
+          isSidebarOpen={isSidebarOpen}
+          selectedModel={selectedModel}
+          onModelChange={setSelectedModel}
+        />
 
         <div className="flex flex-1 flex-col overflow-hidden">
           {messages.length === 0 ? (
-            <ChatEmptyState onSuggestionClick={handleSuggestionClick} />
-          ) : (
-            <ChatMessages messages={messages} isLoading={isLoading} />
-          )}
+            // Empty state: Center everything together
+            <div className="flex flex-1 items-center justify-center px-4">
+              <div className="flex flex-col items-center gap-8 w-full max-w-3xl">
+                <ChatEmptyState onSuggestionClick={handleSuggestionClick} />
 
-          <ChatInput
-            input={input}
-            handleInputChange={handleInputChange}
-            handleSubmit={handleSubmit}
-            isLoading={isLoading}
-          />
+                {/* Input Field */}
+                <div className="w-full">
+                  <ChatInput
+                    input={input}
+                    handleInputChange={handleInputChange}
+                    handleSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    selectedModel={selectedModel}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : (
+            // With messages: Normal layout with input at bottom
+            <>
+              <ChatMessages messages={messages} isLoading={isLoading} />
+              <div className="border-t bg-background">
+                <div className="mx-auto max-w-3xl px-4 py-4">
+                  <ChatInput
+                    input={input}
+                    handleInputChange={handleInputChange}
+                    handleSubmit={handleSubmit}
+                    isLoading={isLoading}
+                    selectedModel={selectedModel}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>

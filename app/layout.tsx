@@ -8,9 +8,9 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  // <CHANGE> Updated metadata for ChatGPT-style interface
-  title: "ChatGPT Redesign",
-  description: "A sleek, modern ChatGPT interface redesign",
+  // <CHANGE> Updated metadata for MaroChat interface
+  title: "MaroChat",
+  description: "A sleek, modern chat interface powered by AI",
   generator: "v0.app",
   icons: {
     icon: [
@@ -39,7 +39,7 @@ export default function RootLayout({
   return (
     // <CHANGE> Added dark class for dark mode by default
     <html lang="en" className="dark">
-      <body className={`font-sans antialiased`}>
+      <body className={`antialiased`} style={{ fontFamily: 'ui-sans-serif, system-ui, -apple-system, sans-serif' }}>
         {children}
         <Analytics />
       </body>

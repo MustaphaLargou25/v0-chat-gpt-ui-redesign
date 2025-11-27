@@ -3,6 +3,7 @@
 import type React from "react"
 import { useRef, useState, useMemo } from "react"
 import { Plus, Mic, Send } from "lucide-react"
+import { getModelDisplayName } from '@/lib/models'
 
 const AUTOCOMPLETE_SUGGESTIONS = [
   "is an interesting fact about space?",
@@ -22,9 +23,10 @@ interface ChatInputProps {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
   handleSubmit: (e?: React.FormEvent) => void
   isLoading: boolean
+  selectedModel?: string
 }
 
-export function ChatInput({ input, handleInputChange, handleSubmit, isLoading }: ChatInputProps) {
+export function ChatInput({ input, handleInputChange, handleSubmit, isLoading, selectedModel }: ChatInputProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [showSuggestions, setShowSuggestions] = useState(false)
 
@@ -93,10 +95,10 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading }:
       <div className="mx-auto max-w-3xl">
         <form onSubmit={onSubmit}>
           <div className="relative">
-            <div className="flex items-center gap-3 rounded-full border border-border bg-muted/50 px-4 py-3 focus-within:border-primary/50 transition-colors">
+            <div className="flex items-center gap-3 rounded-full border border-white/20 bg-[#303030] px-4 py-3 transition-colors hover:border-white/30 focus-within:border-white/40">
               <button
                 type="button"
-                className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                className="flex h-6 w-6 shrink-0 items-center justify-center text-white hover:text-gray-300 transition-colors"
               >
                 <Plus className="h-5 w-5" />
               </button>
@@ -116,7 +118,7 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading }:
 
               <button
                 type="button"
-                className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+                className="flex h-6 w-6 shrink-0 items-center justify-center text-white hover:text-gray-300 transition-colors"
               >
                 <Mic className="h-5 w-5" />
               </button>
@@ -124,7 +126,7 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading }:
               <button
                 type="submit"
                 disabled={isLoading || !input.trim()}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-black hover:bg-gray-200 transition-colors disabled:cursor-not-allowed"
               >
                 {isLoading ? (
                   <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
@@ -153,7 +155,7 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading }:
         </form>
 
         <p className="mt-3 text-center text-xs text-muted-foreground">
-          Powered by Groq with Llama 3.3 70B. AI can make mistakes.
+          Powered by Groq with {selectedModel ? getModelDisplayName(selectedModel) : 'default model'}. AI can make mistakes.
         </p>
       </div>
     </div>
