@@ -1,9 +1,9 @@
-# MaroChat UI
+# ChatGPT UI redesign
 
 *Automatically synced with your [v0.app](https://v0.app) deployments*
 
-[![Deployed on Vercel]
-[![Built with v0]
+[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/mostafalargou25-gmailcoms-projects/v0-chat-gpt-ui-redesign)
+[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/mkEYvilvCKl)
 
 ## Overview
 
@@ -12,13 +12,15 @@ Any changes you make to your deployed app will be automatically pushed to this r
 
 ## Deployment
 
-Vercel
+Your project is live at:
+
+**[https://vercel.com/mostafalargou25-gmailcoms-projects/v0-chat-gpt-ui-redesign](https://vercel.com/mostafalargou25-gmailcoms-projects/v0-chat-gpt-ui-redesign)**
 
 ## Build your app
 
 Continue building your app on:
 
-**[https://v0.app/](https://v0.app/)**
+**[https://v0.app/chat/mkEYvilvCKl](https://v0.app/chat/mkEYvilvCKl)**
 
 ## How It Works
 

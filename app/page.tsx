@@ -11,174 +11,161 @@ import { Message } from '@/lib/types'
 import { SUPPORTED_MODELS, DEFAULT_MODEL } from '@/lib/models'
 
 export default function Home() {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true)
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [selectedModel, setSelectedModel] = useState<string>(DEFAULT_MODEL)
-  const abortControllerRef = useRef<AbortController | null>(null)
+ const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+ const [messages, setMessages] = useState<Message[]>([])
+ const [input, setInput] = useState("")
+ const [isLoading, setIsLoading] = useState(false)
+ const [selectedModel, setSelectedModel] = useState(DEFAULT_MODEL)
+ const abortControllerRef = useRef<AbortController | null>(null)
 
-  // Load model from localStorage on mount
-  useEffect(() => {
-    const savedModel = localStorage.getItem('selectedModel')
-    if (savedModel) {
-      setSelectedModel(savedModel)
-    }
-  }, [])
+ // Load model from localStorage on mount
+ useEffect(() => {
+ const savedModel = localStorage.getItem('selectedModel')
+ if (savedModel) {
+ setSelectedModel(savedModel)
+ }
+ }, [])
 
-  // Save model to localStorage when changed
-  useEffect(() => {
-    localStorage.setItem('selectedModel', selectedModel)
-  }, [selectedModel])
+ // Save model to localStorage when changed
+ useEffect(() => {
+ localStorage.setItem('selectedModel', selectedModel)
+ }, [selectedModel])
 
-  const sendMessage = useCallback(
-    async (messageContent: string, currentMessages: Message[]) => {
-      if (!messageContent.trim() || isLoading) return
+ const sendMessage = useCallback(
+ async (messageContent: string, currentMessages: Message[]) => {
+ if (!messageContent.trim() || isLoading) return
 
-      const userMessage: Message = {
-        id: Date.now().toString(),
-        role: "user",
-        content: messageContent.trim(),
-      }
+ const userMessage: Message = {
+ id: Date.now().toString(),
+ role: "user",
+ content: messageContent.trim(),
+ }
 
-      const newMessages = [...currentMessages, userMessage]
-      setMessages(newMessages)
-      setInput("")
-      setIsLoading(true)
+ const newMessages = [...currentMessages, userMessage]
+ setMessages(newMessages)
+ setInput("")
+ setIsLoading(true)
 
-      try {
-        abortControllerRef.current = new AbortController()
+ try {
+ abortControllerRef.current = new AbortController()
 
-        console.log("[v0] Sending request to /api/chat")
+ console.log("[v0] Sending request to /api/chat")
 
-        const response = await fetch("/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            messages: newMessages.map((m) => ({
-              role: m.role,
-              content: m.content,
-            })),
-            model: selectedModel,
-          }),
-          signal: abortControllerRef.current.signal,
-        })
+ const response = await fetch("/api/chat", {
+ method: "POST",
+ headers: { "Content-Type": "application/json" },
+ body: JSON.stringify({
+ messages: newMessages.map((m) => ({
+ role: m.role,
+ content: m.content,
+ })),
+ model: selectedModel,
+ }),
+ signal: abortControllerRef.current.signal,
+ })
 
-        console.log("[v0] Response status:", response.status)
+ console.log("[v0] Response status:", response.status)
 
-        const text = await response.text()
-        let data
-        try {
-          data = JSON.parse(text)
-        } catch {
-          throw new Error(`Invalid response from server: ${text.substring(0, 100)}`)
-        }
+ const text = await response.text()
+ let data
+ try {
+ data = JSON.parse(text)
+ } catch {
+ throw new Error(`Invalid response from server: ${text.substring(0, 100)}`)
+ }
 
-        if (!response.ok) {
-          throw new Error(data.error || "Failed to fetch response")
-        }
+ if (!response.ok) {
+ throw new Error(data.error || "Failed to fetch response")
+ }
 
-        console.log("[v0] Response data received")
+ console.log("[v0] Response data received")
 
-        const assistantMessage: Message = {
-          id: (Date.now() + 1).toString(),
-          role: "assistant",
-          content: data.content,
-        }
+ const assistantMessage: Message = {
+ id: (Date.now() + 1).toString(),
+ role: "assistant",
+ content: data.content,
+ }
 
-        setMessages((prev) => [...prev, assistantMessage])
-      } catch (error) {
-        if ((error as Error).name !== "AbortError") {
-          console.error("[v0] Chat error:", (error as Error).message)
-          const errorMessage: Message = {
-            id: (Date.now() + 1).toString(),
-            role: "assistant",
-            content: `Sorry, an error occurred: ${(error as Error).message}. Please try again.`,
-          }
-          setMessages((prev) => [...prev, errorMessage])
-        }
-      } finally {
-        setIsLoading(false)
-        abortControllerRef.current = null
-      }
-    },
-    [isLoading, selectedModel],
-  )
+ setMessages((prev) => [...prev, assistantMessage])
+ } catch (error) {
+ if ((error as Error).name !== "AbortError") {
+ console.error("[v0] Chat error:", (error as Error).message)
+ const errorMessage: Message = {
+ id: (Date.now() + 1).toString(),
+ role: "assistant",
+ content: `Sorry, an error occurred: ${(error as Error).message}. Please try again.`,
+ }
+ setMessages((prev) => [...prev, errorMessage])
+ }
+ } finally {
+ setIsLoading(false)
+ abortControllerRef.current = null
+ }
+ },
+ [isLoading, selectedModel],
+ )
 
-  const handleSubmit = useCallback(
-    async (e?: React.FormEvent) => {
-      e?.preventDefault()
-      await sendMessage(input, messages)
-    },
-    [input, messages, sendMessage],
-  )
+ const handleSubmit = useCallback(
+ async (e?: React.FormEvent) => {
+ e?.preventDefault()
+ await sendMessage(input, messages)
+ },
+ [input, messages, sendMessage],
+ )
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setInput(e.target.value)
-  }, [])
+ const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+ setInput(e.target.value)
+ }, [])
 
-  const handleSuggestionClick = useCallback(
-    async (suggestion: string) => {
-      await sendMessage(suggestion, messages)
-    },
-    [messages, sendMessage],
-  )
+ const handleSuggestionClick = useCallback(
+ async (suggestion: string) => {
+ await sendMessage(suggestion, messages)
+ },
+ [messages, sendMessage],
+ )
 
-  const handleNewChat = useCallback(() => {
-    setMessages([])
-    setInput("")
-  }, [])
+ const handleNewChat = useCallback(() => {
+ setMessages([])
+ setInput("")
+ }, [])
 
-  return (
-    <div className="flex h-screen overflow-hidden bg-background">
-      <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
+ return (
+ <div className="flex h-screen overflow-hidden bg-background">
+ <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
 
-      <main className="flex flex-1 flex-col min-w-0">
-        <ChatHeader
-          onToggleSidebar={() => setIsSidebarOpen(true)}
-          isSidebarOpen={isSidebarOpen}
-          selectedModel={selectedModel}
-          onModelChange={setSelectedModel}
-        />
+ <main className="flex flex-1 flex-col min-w-0">
+ <ChatHeader onToggleSidebar={() => setIsSidebarOpen(true)} isSidebarOpen={isSidebarOpen} />
 
-        <div className="flex flex-1 flex-col overflow-hidden">
-          {messages.length === 0 ? (
-            // Empty state: Center everything together
-            <div className="flex flex-1 items-center justify-center px-4">
-              <div className="flex flex-col items-center gap-8 w-full max-w-3xl">
-                <ChatEmptyState onSuggestionClick={handleSuggestionClick} />
+ <div className="flex flex-1 flex-col overflow-hidden">
+ {messages.length === 0 ? (
+ <ChatEmptyState onSuggestionClick={handleSuggestionClick} />
+ ) : (
+ <ChatMessages messages={messages} isLoading={isLoading} />
+ )}
 
-                {/* Input Field */}
-                <div className="w-full">
-                  <ChatInput
-                    input={input}
-                    handleInputChange={handleInputChange}
-                    handleSubmit={handleSubmit}
-                    isLoading={isLoading}
-                    selectedModel={selectedModel}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            // With messages: Normal layout with input at bottom
-            <>
-              <ChatMessages messages={messages} isLoading={isLoading} />
-              <div className="border-t bg-background">
-                <div className="mx-auto max-w-3xl px-4 py-4">
-                  <ChatInput
-                    input={input}
-                    handleInputChange={handleInputChange}
-                    handleSubmit={handleSubmit}
-                    isLoading={isLoading}
-                    selectedModel={selectedModel}
-                  />
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-      </main>
-    </div>
-  )
+ <ChatInput
+ input={input}
+ handleInputChange={handleInputChange}
+ handleSubmit={handleSubmit}
+ isLoading={isLoading}
+ selectedModel={selectedModel}
+ />
+ </div>
+ </main>
+
+ <div className="fixed bottom-4 right-4 bg-muted/50 text-muted-foreground text-xs px-3 py-2 rounded-lg border border-border hidden md:block">
+ <select
+ value={selectedModel}
+ onChange={(e) => setSelectedModel(e.target.value)}
+ className="bg-transparent text-muted-foreground text-xs border-none outline-none cursor-pointer"
+ >
+ {SUPPORTED_MODELS.map((model) => (
+ <option key={model.id} value={model.id} className="bg-background text-foreground">
+ {model.name}
+ </option>
+ ))}
+ </select>
+ </div>
+ </div>
+ )
 }
