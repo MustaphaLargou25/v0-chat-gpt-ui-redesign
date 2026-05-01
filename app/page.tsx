@@ -134,7 +134,12 @@ export default function Home() {
  <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
 
  <main className="flex flex-1 flex-col min-w-0">
- <ChatHeader onToggleSidebar={() => setIsSidebarOpen(true)} isSidebarOpen={isSidebarOpen} />
+ <ChatHeader 
+ onToggleSidebar={() => setIsSidebarOpen(true)} 
+ isSidebarOpen={isSidebarOpen}
+ selectedModel={selectedModel}
+ onModelChange={setSelectedModel}
+ />
 
  <div className="flex flex-1 flex-col overflow-hidden">
  {messages.length === 0 ? (
@@ -153,19 +158,7 @@ export default function Home() {
  </div>
  </main>
 
- <div className="fixed bottom-4 right-4 bg-muted/50 text-muted-foreground text-xs px-3 py-2 rounded-lg border border-border hidden md:block">
- <select
- value={selectedModel}
- onChange={(e) => setSelectedModel(e.target.value)}
- className="bg-transparent text-muted-foreground text-xs border-none outline-none cursor-pointer"
- >
- {SUPPORTED_MODELS.map((model) => (
- <option key={model.id} value={model.id} className="bg-background text-foreground">
- {model.name}
- </option>
- ))}
- </select>
- </div>
+
  </div>
  )
 }
