@@ -91,16 +91,16 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading, s
  }
 
  return (
- <div className="border-t border-border bg-background px-4 pb-6 pt-4">
- <div className="mx-auto max-w-3xl">
+ <div className="border-t border-border bg-background px-3 sm:px-4 pb-4 sm:pb-6 pt-3 sm:pt-4">
+ <div className="mx-auto max-w-4xl">
  <form onSubmit={onSubmit}>
  <div className="relative">
- <div className="flex items-center gap-3 rounded-full border border-foreground/20 bg-muted/50 px-4 py-3 focus-within:border-primary/50 transition-colors">
+ <div className="flex items-center gap-2 sm:gap-3 rounded-full border border-foreground/20 bg-muted/50 px-3 sm:px-4 py-2.5 sm:py-3 focus-within:border-primary/50 transition-colors">
  <button
  type="button"
- className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+ className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
  >
- <Plus className="h-5 w-5" />
+ <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
  </button>
 
  <input
@@ -113,37 +113,37 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading, s
  onBlur={handleBlur}
  placeholder="Ask anything"
  disabled={isLoading}
- className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none disabled:opacity-50"
+ className="flex-1 bg-transparent text-sm sm:text-base text-foreground placeholder:text-muted-foreground outline-none disabled:opacity-50"
  />
 
  <button
  type="button"
- className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+ className="flex h-5 w-5 sm:h-6 sm:w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
  >
- <Mic className="h-5 w-5" />
+ <Mic className="h-4 w-4 sm:h-5 sm:w-5" />
  </button>
 
  <button
  type="submit"
  disabled={isLoading || !input.trim()}
- className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+ className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
  >
  {isLoading ? (
- <div className="h-4 w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+ <div className="h-3 w-3 sm:h-4 sm:w-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
  ) : (
- <Send className="h-4 w-4" />
+ <Send className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
  )}
  </button>
  </div>
 
  {showSuggestions && filteredSuggestions.length > 0 && (
- <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-border bg-card shadow-lg overflow-hidden z-50">
+ <div className="absolute left-0 right-0 top-full mt-2 rounded-xl border border-border bg-card shadow-lg overflow-hidden z-50 max-h-56 overflow-y-auto">
  {filteredSuggestions.map((suggestion, index) => (
  <button
  key={index}
  type="button"
  onClick={() => handleSuggestionClick(suggestion)}
- className="w-full px-4 py-3 text-left text-sm hover:bg-muted/50 transition-colors border-b border-border last:border-b-0"
+ className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-left text-xs sm:text-sm hover:bg-muted/50 transition-colors border-b border-border last:border-b-0"
  >
  <span className="text-foreground">{input.trim()}</span>
  <span className="text-muted-foreground"> {suggestion}</span>
@@ -154,7 +154,7 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading, s
  </div>
  </form>
 
- <p className="mt-3 text-center text-xs text-muted-foreground">
+ <p className="mt-2 sm:mt-3 text-center text-xs text-muted-foreground">
  Powered by Groq with {selectedModel ? getModelDisplayName(selectedModel) : 'default model'}. AI can make mistakes.
  </p>
  </div>

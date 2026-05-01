@@ -11,7 +11,7 @@ import { Message } from '@/lib/types'
 import { SUPPORTED_MODELS, DEFAULT_MODEL } from '@/lib/models'
 
 export default function Home() {
- const [isSidebarOpen, setIsSidebarOpen] = useState(true)
+ const [isSidebarOpen, setIsSidebarOpen] = useState(false)
  const [messages, setMessages] = useState<Message[]>([])
  const [input, setInput] = useState("")
  const [isLoading, setIsLoading] = useState(false)
@@ -130,12 +130,23 @@ export default function Home() {
  }, [])
 
  return (
- <div className="flex h-screen overflow-hidden bg-background">
- <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
+ <div className="flex h-screen overflow-hidden bg-background relative">
+ {/* Mobile overlay backdrop */}
+ {isSidebarOpen && (
+ <div
+ className="fixed inset-0 z-40 bg-black/50 md:hidden"
+ onClick={() => setIsSidebarOpen(false)}
+ />
+ )}
 
- <main className="flex flex-1 flex-col min-w-0">
+ {/* Sidebar */}
+ <div className={`fixed md:relative inset-y-0 left-0 z-50 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 md:translate-x-0`}>
+ <ChatSidebar isOpen={isSidebarOpen} onToggle={() => setIsSidebarOpen(!isSidebarOpen)} onNewChat={handleNewChat} />
+ </div>
+
+ <main className="flex flex-1 flex-col min-w-0 overflow-hidden w-full">
  <ChatHeader 
- onToggleSidebar={() => setIsSidebarOpen(true)} 
+ onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)} 
  isSidebarOpen={isSidebarOpen}
  selectedModel={selectedModel}
  onModelChange={setSelectedModel}
@@ -157,8 +168,6 @@ export default function Home() {
  />
  </div>
  </main>
-
-
  </div>
  )
 }
