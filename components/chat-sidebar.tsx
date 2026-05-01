@@ -1,27 +1,37 @@
 "use client"
 
-import { Plus, PanelLeftClose, MoreHorizontal, Settings, LogOut, User } from "lucide-react"
+import {
+ Plus,
+ PanelLeftClose,
+ MessageSquare,
+ Search,
+ Library,
+ FolderKanban,
+ Sparkles,
+ Presentation,
+ Code2,
+ Palette,
+ FileText,
+ MessageCircle,
+ ChevronRight,
+ Crown,
+} from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 
 interface ChatHistory {
-  id: string
-  title: string
-  timestamp: Date
+ id: string
+ title: string
+ timestamp: Date
 }
 
 interface ChatSidebarProps {
-  isOpen: boolean
-  onToggle: () => void
+ isOpen: boolean
+ onToggle: () => void
+ onNewChat?: () => void
 }
 
 const MOCK_HISTORY: ChatHistory[] = [
@@ -58,107 +68,162 @@ function groupChatsByTime(chats: ChatHistory[]) {
   return { today, yesterday, previous7Days, older }
 }
 
-export function ChatSidebar({ isOpen, onToggle }: ChatSidebarProps) {
-  const { today, yesterday, previous7Days, older } = groupChatsByTime(MOCK_HISTORY)
+export function ChatSidebar({ isOpen, onToggle, onNewChat }: ChatSidebarProps) {
+ const { today, yesterday, previous7Days, older } = groupChatsByTime(MOCK_HISTORY)
 
-  return (
-    <aside
-      className={cn("h-screen border-r border-border bg-card transition-all duration-300", isOpen ? "w-64" : "w-0")}
-    >
-      <div className={cn("flex h-full flex-col", !isOpen && "hidden")}>
-        {/* Top Section - New Chat Button */}
-        <div className="flex items-center justify-between gap-2 p-3 border-b border-border">
-          <Button className="flex-1 justify-start gap-2 bg-transparent" variant="outline">
-            <Plus className="h-4 w-4" />
-            New Chat
-          </Button>
-          <Button size="icon" variant="ghost" onClick={onToggle}>
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
-        </div>
+ return (
+ <aside
+ className={cn("h-screen border-r border-border bg-sidebar transition-all duration-300 flex flex-col", isOpen ? "w-64" : "w-0")}
+ >
+ {/* Top Section - Logo & Collapse */}
+ <div className="flex items-center justify-between gap-2 p-4 border-b border-sidebar-border">
+ <Button
+ size="icon"
+ variant="ghost"
+ className="shrink-0"
+ onClick={() => {
+ (document.currentTarget as HTMLElement).style.display = 'none'
+ ;(document.currentTarget.nextElementSibling as HTMLElement)?.classList.remove('hidden')
+ }}
+ />
+ <span className="font-semibold text-sidebar-foreground text-lg">MaroChat</span>
+ <Button
+ size="icon"
+ variant="ghost"
+ onClick={onToggle}
+ className="shrink-0"
+ >
+ <PanelLeftClose className="h-4 w-4" />
+ </Button>
+ </div>
 
-        {/* Middle Section - Chat History */}
-        <ScrollArea className="flex-1 px-2">
-          <div className="space-y-4 py-4">
-            {today.length > 0 && (
-              <div className="space-y-1">
-                <h3 className="px-2 text-xs font-medium text-muted-foreground">Today</h3>
-                {today.map((chat) => (
-                  <Button key={chat.id} variant="ghost" className="w-full justify-start text-sm font-normal truncate">
-                    <span className="truncate">{chat.title}</span>
-                  </Button>
-                ))}
-              </div>
-            )}
+ {/* Navigation Section */}
+ <div className="space-y-2 px-3 py-4 border-b border-sidebar-border">
+ <Button
+ onClick={onNewChat}
+ className="w-full justify-start gap-2 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90"
+ >
+ <Plus className="h-4 w-4" />
+ New chat
+ </Button>
 
-            {yesterday.length > 0 && (
-              <div className="space-y-1">
-                <h3 className="px-2 text-xs font-medium text-muted-foreground">Yesterday</h3>
-                {yesterday.map((chat) => (
-                  <Button key={chat.id} variant="ghost" className="w-full justify-start text-sm font-normal truncate">
-                    <span className="truncate">{chat.title}</span>
-                  </Button>
-                ))}
-              </div>
-            )}
+ <Button
+ variant="ghost"
+ className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <Search className="h-4 w-4" />
+ Search chats
+ </Button>
 
-            {previous7Days.length > 0 && (
-              <div className="space-y-1">
-                <h3 className="px-2 text-xs font-medium text-muted-foreground">Previous 7 Days</h3>
-                {previous7Days.map((chat) => (
-                  <Button key={chat.id} variant="ghost" className="w-full justify-start text-sm font-normal truncate">
-                    <span className="truncate">{chat.title}</span>
-                  </Button>
-                ))}
-              </div>
-            )}
+ <Button
+ variant="ghost"
+ className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <Library className="h-4 w-4" />
+ Library
+ </Button>
 
-            {older.length > 0 && (
-              <div className="space-y-1">
-                <h3 className="px-2 text-xs font-medium text-muted-foreground">Older</h3>
-                {older.map((chat) => (
-                  <Button key={chat.id} variant="ghost" className="w-full justify-start text-sm font-normal truncate">
-                    <span className="truncate">{chat.title}</span>
-                  </Button>
-                ))}
-              </div>
-            )}
-          </div>
-        </ScrollArea>
+ <Button
+ variant="ghost"
+ className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <FolderKanban className="h-4 w-4" />
+ Projects
+ </Button>
+ </div>
 
-        {/* Bottom Section - User Profile */}
-        <div className="border-t border-border p-3">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="w-full justify-start gap-3 h-auto py-2">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src="/diverse-user-avatars.png" />
-                  <AvatarFallback>JD</AvatarFallback>
-                </Avatar>
-                <div className="flex flex-1 flex-col items-start text-sm">
-                  <span className="font-medium">John Doe</span>
-                </div>
-                <MoreHorizontal className="h-4 w-4 text-muted-foreground" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              <DropdownMenuItem>
-                <User className="mr-2 h-4 w-4" />
-                Custom Instructions
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <LogOut className="mr-2 h-4 w-4" />
-                Log out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      </div>
-    </aside>
-  )
+ {/* Chat History Section */}
+ <ScrollArea className="flex-1 sidebar-scrollbar">
+ <div className="px-3 py-4">
+ <h3 className="text-sm font-semibold text-sidebar-foreground mb-3">Your chats</h3>
+
+ {today.length > 0 && (
+ <div className="mb-4">
+ <h4 className="text-xs font-medium text-sidebar-foreground/60 mb-2">Today</h4>
+ {today.map((chat) => (
+ <Button
+ key={chat.id}
+ variant="ghost"
+ className="w-full justify-start text-sm font-normal truncate text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+ <span className="truncate">{chat.title}</span>
+ </Button>
+ ))}
+ </div>
+ )}
+
+ {yesterday.length > 0 && (
+ <div className="mb-4">
+ <h4 className="text-xs font-medium text-sidebar-foreground/60 mb-2">Yesterday</h4>
+ {yesterday.map((chat) => (
+ <Button
+ key={chat.id}
+ variant="ghost"
+ className="w-full justify-start text-sm font-normal truncate text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+ <span className="truncate">{chat.title}</span>
+ </Button>
+ ))}
+ </div>
+ )}
+
+ {previous7Days.length > 0 && (
+ <div className="mb-4">
+ <h4 className="text-xs font-medium text-sidebar-foreground/60 mb-2">Previous 7 Days</h4>
+ {previous7Days.map((chat) => (
+ <Button
+ key={chat.id}
+ variant="ghost"
+ className="w-full justify-start text-sm font-normal truncate text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+ <span className="truncate">{chat.title}</span>
+ </Button>
+ ))}
+ </div>
+ )}
+
+ {older.length > 0 && (
+ <div className="mb-4">
+ <h4 className="text-xs font-medium text-sidebar-foreground/60 mb-2">Older</h4>
+ {older.map((chat) => (
+ <Button
+ key={chat.id}
+ variant="ghost"
+ className="w-full justify-start text-sm font-normal truncate text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <MessageCircle className="h-4 w-4 mr-2 shrink-0" />
+ <span className="truncate">{chat.title}</span>
+ </Button>
+ ))}
+ </div>
+ )}
+ </div>
+ </ScrollArea>
+
+ {/* Bottom Profile Section */}
+ <div className="border-t border-sidebar-border p-3 space-y-2">
+ <Button
+ variant="ghost"
+ className="w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent"
+ >
+ <Avatar className="h-6 w-6">
+ <AvatarImage src="/diverse-user-avatars.png" />
+ <AvatarFallback>JD</AvatarFallback>
+ </Avatar>
+ <div className="flex-1 text-left">
+ <div className="text-sm font-medium">John Doe</div>
+ <div className="text-xs text-sidebar-foreground/60">Free Plan</div>
+ </div>
+ </Button>
+
+ <Button className="w-full justify-start gap-2 bg-sidebar-primary text-sidebar-primary-foreground hover:bg-sidebar-primary/90">
+ <Crown className="h-4 w-4" />
+ Upgrade to Plus
+ </Button>
+ </div>
+ </aside>
+ )
 }

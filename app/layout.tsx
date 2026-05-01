@@ -8,27 +8,27 @@ const _geist = Geist({ subsets: ["latin"] })
 const _geistMono = Geist_Mono({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  // <CHANGE> Updated metadata for ChatGPT-style interface
-  title: "ChatGPT Redesign",
-  description: "A sleek, modern ChatGPT interface redesign",
-  generator: "v0.app",
-  icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
-  },
+ // Updated metadata for MaroChat interface
+ title: "MaroChat",
+ description: "A sleek, modern chat interface powered by AI",
+ generator: "v0.app",
+ icons: {
+ icon: [
+ {
+ url: "/icon-light-32x32.png",
+ media: "(prefers-color-scheme: light)",
+ },
+ {
+ url: "/icon-dark-32x32.png",
+ media: "(prefers-color-scheme: dark)",
+ },
+ {
+ url: "/icon.svg",
+ type: "image/svg+xml",
+ },
+ ],
+ apple: "/apple-icon.png",
+ },
 }
 
 export default function RootLayout({
