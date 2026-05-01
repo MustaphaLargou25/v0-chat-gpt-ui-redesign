@@ -95,7 +95,7 @@ export function ChatInput({ input, handleInputChange, handleSubmit, isLoading, s
  <div className="mx-auto max-w-3xl">
  <form onSubmit={onSubmit}>
  <div className="relative">
- <div className="flex items-center gap-3 rounded-full border border-border bg-muted/50 px-4 py-3 focus-within:border-primary/50 transition-colors">
+ <div className="flex items-center gap-3 rounded-full border border-foreground/20 bg-muted/50 px-4 py-3 focus-within:border-primary/50 transition-colors">
  <button
  type="button"
  className="flex h-6 w-6 shrink-0 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
